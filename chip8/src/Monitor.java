@@ -14,11 +14,13 @@ public class Monitor {
 
         jFrame = new JFrame();
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jFrame.setSize(640,320);
+        Insets insets = jFrame.getInsets();
         jPanel = new ScreenPanel();
-        //jPanel.setSize(64,32);
-        //jPanel.getGraphics().f
         jFrame.getContentPane().add(jPanel);
+        jPanel.setPreferredSize(new Dimension(640,320));
+        jFrame.pack();
+        jFrame.setResizable(false);
+        jFrame.setLocationRelativeTo(null);
     }
 
     public void show() {
