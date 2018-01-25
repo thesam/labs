@@ -67,6 +67,38 @@ public class Emulator {
             //TODO: Add
             return;
         }
+        if (firstCode == 0x8000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0x9000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xA000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xB000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xC000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xD000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xE000) {
+            //TODO:
+            return;
+        }
+        if (firstCode == 0xF000) {
+            //TODO:
+            return;
+        }
     }
 
     private void clearScreen() {
