@@ -7,5 +7,8 @@ public class Main {
         emulator = new Emulator();
         monitor = new Monitor(emulator.videoMemory);
         monitor.show();
+        while (true) {
+            emulator.next();
+        }
     }
 }
