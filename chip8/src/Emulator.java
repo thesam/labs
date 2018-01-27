@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Emulator {
 
     int[] memory = new int[4096];
@@ -9,6 +12,7 @@ public class Emulator {
     //sound timer
     //input
     boolean[][] videoMemory = new boolean[64][32];
+    List<Integer> stack = new ArrayList<>();
 
     public Emulator() {
         i = 0x200;
@@ -44,23 +48,40 @@ public class Emulator {
             return;
         }
         if (firstCode == 0x2000) {
-            //TODO: Call subroutine
+            int addr = 0x0FFF & opcode;
+            //TODO: Add i + 2 to return after?
+            stack.add(i);
+            this.i = addr;
             return;
         }
         if (firstCode == 0x3000) {
-            //TODO: Skip
+            int x = (0x0F00 & opcode) >> 8;
+            int nn = (0x00FF & opcode);
+            if (v[x] == nn) {
+                i = i + 2;
+            }
             return;
         }
         if (firstCode == 0x4000) {
-            //TODO: Skip
+            int x = (0x0F00 & opcode) >> 8;
+            int nn = (0x00FF & opcode);
+            if (v[x] != nn) {
+                i = i + 2;
+            }
             return;
         }
         if (firstCode == 0x5000) {
-            //TODO: Skip
+            int x = (0x0F00 & opcode) >> 8;
+            int y = (0x00F0 & opcode) >> 4;
+            if (v[x] == v[y]) {
+                i = i + 2;
+            }
             return;
         }
         if (firstCode == 0x6000) {
-            //TODO: Set
+            int x = (0x0F00 & opcode) >> 8;
+            int nn = (0x00FF & opcode);
+            v[x] = nn;
             return;
         }
         if (firstCode == 0x7000) {
@@ -105,7 +126,7 @@ public class Emulator {
         videoMemory = new boolean[64][32];
     }
 
-    public void loadProgram(int[] data) {
+    public void loadProgram(byte[] data) {
         int base = 0x200;
         for (int i = 0; i <data.length; i++) {
             memory[base + i] = data[i];
