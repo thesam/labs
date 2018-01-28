@@ -18,7 +18,7 @@ public class Main {
         monitor.show();
         emulator.loadProgram(bytes);
         int count = 0;
-        while (true && count < 10000) {
+        while (true && count < 2000) {
             System.err.print(count + ": ");
             emulator.next();
             count++;
