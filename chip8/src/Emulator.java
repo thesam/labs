@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Emulator {
@@ -64,7 +65,7 @@ public class Emulator {
         if (firstCode == 0x3000) {
             int x = (0x0F00 & opcode) >> 8;
             int nn = (0x00FF & opcode);
-            log("skip if v[x] == nn");
+            log("skip if v[" + x +"] == " + nn);
             if (v[x] == nn) {
                 pc = pc + 2;
             }
@@ -95,6 +96,7 @@ public class Emulator {
         if (firstCode == 0x7000) {
             int x = (0x0F00 & opcode) >> 8;
             int nn = (0x00FF & opcode);
+            log("Add to v[" + x + "]: " + nn);
             v[x] += nn;
             return;
         }
@@ -151,21 +153,26 @@ public class Emulator {
             int x = (0x0F00 & opcode) >> 8;
             int nn = (0x00FF & opcode);
             //TODO: real random
-            int rand = 1;
+            int rand = new Random().nextInt(256);
             v[x] = rand & nn;
-            log("v[x] = rand & nn");
+            log("v[" + x +"] = " + rand + " & "+nn);
             return;
         }
         if (firstCode == 0xD000) {
             //TODO: Calculate correct coords
             int n = opcode & 0x000f;
-            int x = (0x0F00 & opcode) >> 8;
-            int y = (0x00F0 & opcode) >> 4;
-            for (int row = 0; row < n; row++) {
+            int x = v[(0x0F00 & opcode) >> 8];
+            int y = v[(0x00F0 & opcode) >> 4];
+            log("display at " + x +"," + y + " " + n + " lines");
+            for (int row = y; row < y + n; row++) {
                 int data = i + row;
                 for (int col = 0; col < 8; col++) {
                     boolean spriteSet = ((data >> col) & 1) > 0;
-                    videoMemory[col][row] = spriteSet;
+                    int drawX = x + col;
+                    int drawY = row;
+                    if (drawX < 64 && drawY < 32) {
+                        videoMemory[drawX][drawY] = spriteSet;
+                    }
                 }
             }
             //TODO:

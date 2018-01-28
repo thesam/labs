@@ -18,10 +18,11 @@ public class Main {
         monitor.show();
         emulator.loadProgram(bytes);
         int count = 0;
-        while (true && count < 10) {
+        while (true && count < 10000) {
+            System.err.print(count + ": ");
             emulator.next();
             count++;
         }
-        System.err.println("STOP");
+        //System.err.println("STOP");
     }
 }
