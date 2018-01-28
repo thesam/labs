@@ -17,8 +17,11 @@ public class Main {
         monitor = new Monitor(emulator.videoMemory);
         monitor.show();
         emulator.loadProgram(bytes);
-        while (true) {
+        int count = 0;
+        while (true && count < 10) {
             emulator.next();
+            count++;
         }
+        System.err.println("STOP");
     }
 }
