@@ -165,18 +165,18 @@ public class Emulator {
             int y = v[(0x00F0 & opcode) >> 4];
             log("display at " + x +"," + y + " " + n + " lines");
             log("i = " + i);
-            int count = 0;
-            for (int row = y; row < y + n; row++) {
-                int data = memory[i + count];
-                for (int col = 7; col >= 0; col--) {
+            for (int row = 0; row < n; row++) {
+                int data = memory[i + row];
+                for (int col = 0; col < 8; col++) {
                     boolean spriteSet = ((data >> col) & 1) > 0;
                     int drawX = x + col;
-                    int drawY = row;
-                    if (drawX < 64 && drawY < 32) {
+                    int drawY = y + row;
+                    if (spriteSet && drawX < 64 && drawY < 32) {
+                        //TODO: Should XOR
+                        log("DRAW to " + drawX + "," + drawY);
                         videoMemory[drawX][drawY] = spriteSet;
                     }
                 }
-                count++;
             }
             //TODO:
             return;
