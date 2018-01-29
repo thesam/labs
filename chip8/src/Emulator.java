@@ -29,9 +29,9 @@ public class Emulator {
     }
 
     public void next() {
-        int firstbyte = memory[pc++];
-        int secondbyte = memory[pc++];
-        int opcode = (firstbyte << 8) | secondbyte;
+        int firstbyte = memory[pc++] & 0xFF;
+        int secondbyte = memory[pc++] & 0xFF;
+        int opcode = ((firstbyte << 8) | secondbyte) & 0xFFFF;
         System.err.printf("opcode: %x\n", opcode);
         int firstCode = 0xF000 & opcode;
 
@@ -168,7 +168,7 @@ public class Emulator {
             for (int row = 0; row < n; row++) {
                 int data = memory[i + row];
                 for (int col = 0; col < 8; col++) {
-                    boolean spriteSet = ((data >> col) & 1) > 0;
+                    boolean spriteSet = ((data >> 7-col) & 1) > 0;
                     int drawX = x + col;
                     int drawY = y + row;
                     if (spriteSet && drawX < 64 && drawY < 32) {
@@ -196,7 +196,7 @@ public class Emulator {
         videoMemory = new boolean[64][32];
     }
 
-    public void loadProgram(byte[] data) {
+    public void loadProgram(byte... data) {
         int base = 0x200;
         for (int i = 0; i <data.length; i++) {
             memory[base + i] = data[i];
