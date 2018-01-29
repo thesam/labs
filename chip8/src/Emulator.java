@@ -107,28 +107,48 @@ public class Emulator {
 
             if (lastNibble == 0) {
                 v[x] = v[y];
+                return;
             }
             if (lastNibble == 1) {
                 v[x] = v[x] | v[y];
+                return;
             }
             if (lastNibble == 2) {
                 v[x] = v[x] & v[y];
+                return;
             }
             if (lastNibble == 3) {
                 v[x] = v[x] ^ v[y];
+                return;
             }
             if (lastNibble == 4) {
                 //TODO: Carry
                 v[x] = v[x] + v[y];
+                return;
             }
             if (lastNibble == 5) {
                 //TODO: Borrow
                 v[x] = v[x] - v[y];
+                return;
             }
-            //TODO: 6,7,E
-
-            //TODO:
-            return;
+            if (lastNibble == 6) {
+                v[0xF] = v[y] & 1;
+                v[y] = v[y] >> 1;
+                v[x] = v[y];
+                return;
+            }
+            if (lastNibble == 7) {
+                v[x] = v[y] - v[x];
+                //TODO: Borrow
+                return;
+            }
+            if (lastNibble == 0xE) {
+                //TODO MSB
+                v[y] = v[y] << 1;
+                v[x] = v[y];
+                return;
+            }
+            throw new RuntimeException("Unknown instruction");
         }
         if (firstCode == 0x9000) {
             int x = (0x0F00 & opcode) >> 8;
@@ -152,14 +172,12 @@ public class Emulator {
         if (firstCode == 0xC000) {
             int x = (0x0F00 & opcode) >> 8;
             int nn = (0x00FF & opcode);
-            //TODO: real random
             int rand = new Random().nextInt(256);
             v[x] = rand & nn;
             log("v[" + x +"] = " + rand + " & "+nn);
             return;
         }
         if (firstCode == 0xD000) {
-            //TODO: Calculate correct coords
             int n = opcode & 0x000f;
             int x = v[(0x0F00 & opcode) >> 8];
             int y = v[(0x00F0 & opcode) >> 4];
@@ -178,7 +196,6 @@ public class Emulator {
                     }
                 }
             }
-            //TODO:
             return;
         }
         if (firstCode == 0xE000) {
@@ -187,6 +204,10 @@ public class Emulator {
         }
         if (firstCode == 0xF000) {
             //TODO:
+            if (secondbyte == 0x1E) {
+                int x = (0x0F00 & opcode) >> 8;
+                i += v[x];
+            }
             return;
         }
         throw new RuntimeException("Unsupported instruction: " + opcode);
