@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.nio.file.Files;
 
@@ -14,11 +16,27 @@ public class Main {
         File file = jFileChooser.getSelectedFile();
         byte[] bytes = Files.readAllBytes(file.toPath());
         emulator = new Emulator();
-        monitor = new Monitor(emulator.videoMemory);
+        monitor = new Monitor(emulator.videoMemory, new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent keyEvent) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                emulator.keyPressed();
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                emulator.keyReleased();
+            }
+        });
         monitor.show();
         emulator.loadProgram(bytes);
         int count = 0;
-        while (true && count < 10000) {
+        while (true) {
             System.err.print(count + ": ");
             emulator.next();
             count++;

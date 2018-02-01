@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 public class Monitor {
@@ -9,7 +10,7 @@ public class Monitor {
     private boolean[][] videoMemory;
     private BufferedImage bufferedImage = new BufferedImage(64,32,BufferedImage.TYPE_3BYTE_BGR);
 
-    public Monitor(boolean[][] videoMemory) {
+    public Monitor(boolean[][] videoMemory, KeyListener keyListener) {
         this.videoMemory = videoMemory;
 
         jFrame = new JFrame();
@@ -21,6 +22,7 @@ public class Monitor {
         jFrame.pack();
         jFrame.setResizable(false);
         jFrame.setLocationRelativeTo(null);
+        jPanel.addKeyListener(keyListener);
     }
 
     public void show() {

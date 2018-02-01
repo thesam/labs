@@ -15,6 +15,7 @@ public class Emulator {
     //input
     boolean[][] videoMemory = new boolean[64][32];
     Stack<Integer> stack = new Stack<>();
+    private boolean keyPressed;
 
     public Emulator() {
         pc = 0x200;
@@ -219,9 +220,19 @@ public class Emulator {
             return;
         }
         if (firstCode == 0xE000) {
-            //TODO:
-            throw new RuntimeException(("E000"));
-            //return;
+            //TODO: Check actual key
+            int x = (0x0F00 & opcode) >> 8;
+            if (secondbyte == 0x9E) {
+                if (keyPressed) {
+                    pc += 2;
+                }
+            }
+            if (secondbyte == 0xA1) {
+                if (!keyPressed) {
+                    pc += 2;
+                }
+            }
+            return;
         }
         if (firstCode == 0xF000) {
             //TODO:
@@ -257,5 +268,13 @@ public class Emulator {
 
     private void log(String str) {
         System.err.println(str);
+    }
+
+    public void keyPressed() {
+        this.keyPressed = true;
+    }
+
+    public void keyReleased() {
+        this.keyPressed = false;
     }
 }
