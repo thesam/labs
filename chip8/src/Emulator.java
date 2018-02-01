@@ -98,6 +98,7 @@ public class Emulator {
             int nn = (0x00FF & opcode);
             log("Add to v[" + x + "]: " + nn);
             v[x] += nn;
+            v[x] %= 256;
             return;
         }
         if (firstCode == 0x8000) {
@@ -122,31 +123,41 @@ public class Emulator {
                 return;
             }
             if (lastNibble == 4) {
-                //TODO: Carry
                 v[x] = v[x] + v[y];
+                if (v[x] > 0xff) {
+                    v[0xf] = 1;
+                    v[x] = v[x] % 256;
+                } else {
+                    v[0xf] = 0;
+                }
                 return;
             }
             if (lastNibble == 5) {
                 //TODO: Borrow
                 v[x] = v[x] - v[y];
-                return;
+                throw new RuntimeException(("borrow"));
+                //return;
             }
             if (lastNibble == 6) {
+                //TODO MSB
                 v[0xF] = v[y] & 1;
                 v[y] = v[y] >> 1;
                 v[x] = v[y];
-                return;
+                throw new RuntimeException(("LSB"));
+                //return;
             }
             if (lastNibble == 7) {
                 v[x] = v[y] - v[x];
                 //TODO: Borrow
-                return;
+                throw new RuntimeException(("borrow"));
+                //return;
             }
             if (lastNibble == 0xE) {
                 //TODO MSB
                 v[y] = v[y] << 1;
                 v[x] = v[y];
-                return;
+                throw new RuntimeException(("MSB"));
+                //return;
             }
             throw new RuntimeException("Unknown instruction");
         }
@@ -178,6 +189,7 @@ public class Emulator {
             return;
         }
         if (firstCode == 0xD000) {
+            boolean flipped = false;
             int n = opcode & 0x000f;
             int x = v[(0x0F00 & opcode) >> 8];
             int y = v[(0x00F0 & opcode) >> 4];
@@ -190,20 +202,39 @@ public class Emulator {
                     int drawX = x + col;
                     int drawY = y + row;
                     if (spriteSet && drawX < 64 && drawY < 32) {
-                        //TODO: Should XOR
                         log("DRAW to " + drawX + "," + drawY);
-                        videoMemory[drawX][drawY] = spriteSet;
+                        boolean currentPixel = videoMemory[drawX][drawY];
+                        videoMemory[drawX][drawY] = spriteSet ^ currentPixel;
+                        if (videoMemory[drawX][drawY] != currentPixel) {
+                            flipped = true;
+                        }
                     }
                 }
+            }
+            if (flipped) {
+                v[0xf] = 1;
+            } else {
+                v[0xf] = 0;
             }
             return;
         }
         if (firstCode == 0xE000) {
             //TODO:
-            return;
+            throw new RuntimeException(("E000"));
+            //return;
         }
         if (firstCode == 0xF000) {
             //TODO:
+            if (secondbyte == 0x07) {
+                int x = (0x0F00 & opcode) >> 8;
+                throw new RuntimeException(("07"));
+
+            }
+            if (secondbyte == 0x15) {
+                int x = (0x0F00 & opcode) >> 8;
+                throw new RuntimeException(("15"));
+
+            }
             if (secondbyte == 0x1E) {
                 int x = (0x0F00 & opcode) >> 8;
                 i += v[x];
