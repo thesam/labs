@@ -52,6 +52,42 @@ public class EmulatorTest {
     }
 
     @Test
+    public void _3xnn_skip() {
+        emulator.v[0] = 0xff;
+
+        execute(0x30FF);
+
+        assertEquals(0x200 + 4, emulator.pc);
+    }
+
+    @Test
+    public void _3xnn_noskip() {
+        emulator.v[0] = 0x00;
+
+        execute(0x30FF);
+
+        assertEquals(0x200 + 2, emulator.pc);
+    }
+
+    @Test
+    public void _4xnn_skip() {
+        emulator.v[0] = 0x00;
+
+        execute(0x40FF);
+
+        assertEquals(0x200 + 4, emulator.pc);
+    }
+
+    @Test
+    public void _4xnn_noskip() {
+        emulator.v[0] = 0xFF;
+
+        execute(0x40FF);
+
+        assertEquals(0x200 + 2, emulator.pc);
+    }
+
+    @Test
     public void _6fnn() {
         execute(0x6AFF);
 
@@ -151,10 +187,62 @@ public class EmulatorTest {
     }
 
     @Test
+    public void _8xy6_lsb() {
+        emulator.v[0xa] = 0x00;
+        emulator.v[0xb] = 0xF1;
+        execute(0x8AB6);
+
+        assertEquals(0xf0 >> 1,emulator.v[0xa]);
+        assertEquals(0xf0 >> 1,emulator.v[0xb]);
+        assertEquals(1,emulator.v[0xf]);
+    }
+
+    @Test
+    public void _8xy6_nolsb() {
+        emulator.v[0xa] = 0x00;
+        emulator.v[0xb] = 0xF0;
+        execute(0x8AB6);
+
+        assertEquals(0xF0 >> 1 ,emulator.v[0xa]);
+        assertEquals(0xF0 >> 1,emulator.v[0xb]);
+        assertEquals(0,emulator.v[0xf]);
+    }
+
+
+    @Test
+    public void _8xy7_noborrow() {
+        emulator.v[0xa] = 0xFF;
+        emulator.v[0xb] = 0xFF;
+        execute(0x8AB7);
+
+        assertEquals(0 ,emulator.v[0xa]);
+        assertEquals(0, emulator.v[0xf]);
+    }
+
+    @Test
+    public void _8xy7_borrow() {
+        emulator.v[0xa] = 0x02;
+        emulator.v[0xb] = 0x01;
+        execute(0x8AB7);
+
+        assertEquals(0xFF ,emulator.v[0xa]);
+        assertEquals(1, emulator.v[0xf]);
+    }
+
+    @Test
     public void _annn() {
         execute(0xAFFF);
 
         assertEquals(0xFFF,emulator.i);
+    }
+
+
+    @Test
+    public void _bnnn() {
+        emulator.v[0] = 2;
+        execute(0xB001);
+
+        assertEquals(0x0003,emulator.pc);
     }
 
 
@@ -208,15 +296,10 @@ public class EmulatorTest {
     /*
 From: https://en.wikipedia.org/wiki/CHIP-8
 
-3XNN	Cond	if(Vx==NN)	Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
 4XNN	Cond	if(Vx!=NN)	Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
 5XY0	Cond	if(Vx==Vy)	Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
-8XY5	Math	Vx -= Vy	VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
-8XY6	BitOp	Vx=Vy=Vy>>1	Shifts VY right by one and copies the result to VX. VF is set to the value of the least significant bit of VY before the shift.[2]
-8XY7	Math	Vx=Vy-Vx	Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
 8XYE	BitOp	Vx=Vy=Vy<<1	Shifts VY left by one and copies the result to VX. VF is set to the value of the most significant bit of VY before the shift.[2]
 9XY0	Cond	if(Vx!=Vy)	Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
-BNNN	Flow	PC=V0+NNN	Jumps to the address NNN plus V0.
 CXNN	Rand	Vx=rand()&NN	Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
 DXYN	Disp	draw(Vx,Vy,N)	Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
 EX9E	KeyOp	if(key()==Vx)	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)

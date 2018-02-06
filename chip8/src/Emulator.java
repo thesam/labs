@@ -132,24 +132,26 @@ public class Emulator {
                 return;
             }
             if (lastNibble == 5) {
-                //TODO: Borrow
                 v[x] = v[x] - v[y];
-                throw new RuntimeException(("borrow"));
-                //return;
+                if (v[x] < 0) {
+                    v[0xf] = 1;
+                    v[x] = v[x] & 0xFF;
+                }
+                return;
             }
             if (lastNibble == 6) {
-                //TODO MSB
                 v[0xF] = v[y] & 1;
                 v[y] = v[y] >> 1;
                 v[x] = v[y];
-                throw new RuntimeException(("LSB"));
-                //return;
+                return;
             }
             if (lastNibble == 7) {
                 v[x] = v[y] - v[x];
-                //TODO: Borrow
-                throw new RuntimeException(("borrow"));
-                //return;
+                if (v[x] < 0) {
+                    v[x] = v[x] & 0xFF;
+                    v[0xf] = 1;
+                }
+                return;
             }
             if (lastNibble == 0xE) {
                 //TODO MSB
