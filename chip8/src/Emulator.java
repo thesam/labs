@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
@@ -41,13 +39,14 @@ public class Emulator {
             if (secondbyte == 0xE0) {
                 log("disp_clear()");
                 clearScreen();
+                return;
             }
             if (secondbyte == 0xEE) {
                 Integer dest = stack.pop();
                 log("return: " + dest);
                 pc = dest;
+                return;
             }
-            return;
         }
         if (firstCode == 0x1000) {
             int addr = 0x0FFF & opcode;
@@ -57,7 +56,6 @@ public class Emulator {
         }
         if (firstCode == 0x2000) {
             int addr = 0x0FFF & opcode;
-            //TODO: Add i + 2 to return after?
             log("call " + addr);
             stack.push(pc);
             this.pc = addr;
@@ -252,7 +250,7 @@ public class Emulator {
             }
             return;
         }
-        throw new RuntimeException("Unsupported instruction: " + opcode);
+        throw new UnsupportedOperationException("Unsupported instruction: " + opcode);
     }
 
     private void clearScreen() {
@@ -263,6 +261,13 @@ public class Emulator {
         int base = 0x200;
         for (int i = 0; i <data.length; i++) {
             memory[base + i] = data[i];
+        }
+    }
+
+    public void loadProgram(int... data) {
+        int base = 0x200;
+        for (int i = 0; i <data.length; i++) {
+            memory[base + i] = data[i] & 0xFF;
         }
     }
 
