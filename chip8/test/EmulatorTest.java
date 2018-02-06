@@ -88,6 +88,26 @@ public class EmulatorTest {
     }
 
     @Test
+    public void _5xy0_noskip() {
+        emulator.v[0] = 0xFE;
+        emulator.v[1] = 0xFF;
+
+        execute(0x5010);
+
+        assertEquals(0x200 + 2, emulator.pc);
+    }
+
+    @Test
+    public void _5xy0_skip() {
+        emulator.v[0] = 0xFF;
+        emulator.v[1] = 0xFF;
+
+        execute(0x5010);
+
+        assertEquals(0x200 + 4, emulator.pc);
+    }
+
+    @Test
     public void _6fnn() {
         execute(0x6AFF);
 
@@ -230,6 +250,16 @@ public class EmulatorTest {
     }
 
     @Test
+    public void _9xy0() {
+        emulator.v[0] = 0xFE;
+        emulator.v[1] = 0xFF;
+
+        execute(0x9010);
+
+        assertEquals(0x200 + 4, emulator.pc);
+    }
+
+    @Test
     public void _annn() {
         execute(0xAFFF);
 
@@ -243,6 +273,55 @@ public class EmulatorTest {
         execute(0xB001);
 
         assertEquals(0x0003,emulator.pc);
+    }
+
+    @Test
+    public void _fx07() {
+        emulator.delayTimer = 67;
+
+        execute(0xFA07);
+
+        assertEquals(67, emulator.v[0xA]);
+    }
+
+    @Test
+    public void _fx15() {
+        emulator.v[0xa] = 55;
+
+        execute(0xFA15);
+
+        assertEquals(55, emulator.delayTimer);
+    }
+
+    @Test
+    public void _fx18() {
+        emulator.v[0xa] = 55;
+
+        execute(0xFA18);
+
+        assertEquals(55, emulator.soundTimer);
+    }
+
+    @Test
+    public void _fx1e() {
+        emulator.i = 0;
+        emulator.v[1] = 11;
+
+        execute(0xF11E);
+
+        assertEquals(11,emulator.i);
+    }
+
+    @Test
+    public void _fx33() {
+        emulator.i = 0;
+        emulator.v[1] = 321;
+
+        execute(0xF133);
+
+        assertEquals(3,emulator.memory[emulator.i]);
+        assertEquals(2,emulator.memory[emulator.i + 1]);
+        assertEquals(1,emulator.memory[emulator.i + 2]);
     }
 
 
@@ -293,31 +372,16 @@ public class EmulatorTest {
     }
 
 
-    /*
+/*
 From: https://en.wikipedia.org/wiki/CHIP-8
 
-4XNN	Cond	if(Vx!=NN)	Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
-5XY0	Cond	if(Vx==Vy)	Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
 8XYE	BitOp	Vx=Vy=Vy<<1	Shifts VY left by one and copies the result to VX. VF is set to the value of the most significant bit of VY before the shift.[2]
-9XY0	Cond	if(Vx!=Vy)	Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
 CXNN	Rand	Vx=rand()&NN	Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
 DXYN	Disp	draw(Vx,Vy,N)	Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
 EX9E	KeyOp	if(key()==Vx)	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
 EXA1	KeyOp	if(key()!=Vx)	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-FX07	Timer	Vx = get_delay()	Sets VX to the value of the delay timer.
 FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
-FX15	Timer	delay_timer(Vx)	Sets the delay timer to VX.
-FX18	Sound	sound_timer(Vx)	Sets the sound timer to VX.
-FX1E	MEM	I +=Vx	Adds VX to I.[3]
 FX29	MEM	I=sprite_addr[Vx]	Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-FX33	BCD	set_BCD(Vx);
-*(I+0)=BCD(3);
-
-*(I+1)=BCD(2);
-
-*(I+2)=BCD(1);
-
-Stores the binary-coded decimal representation of VX, with the most significant of three digits at the address in I, the middle digit at I plus 1, and the least significant digit at I plus 2. (In other words, take the decimal representation of VX, place the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.)
 FX55	MEM	reg_dump(Vx,&I)	Stores V0 to VX (including VX) in memory starting at address I. I is increased by 1 for each value written.
 FX65	MEM	reg_load(Vx,&I)	Fills V0 to VX (including VX) with values from memory starting at address I. I is increased by 1 for each value written.
 

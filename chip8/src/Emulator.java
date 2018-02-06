@@ -8,12 +8,14 @@ public class Emulator {
     int i;
     int pc;
 
+    int delayTimer;
     //delay timer
     //sound timer
     //input
     boolean[][] videoMemory = new boolean[64][32];
     Stack<Integer> stack = new Stack<>();
     private boolean keyPressed;
+    int soundTimer;
 
     public Emulator() {
         pc = 0x200;
@@ -64,7 +66,7 @@ public class Emulator {
         if (firstCode == 0x3000) {
             int x = (0x0F00 & opcode) >> 8;
             int nn = (0x00FF & opcode);
-            log("skip if v[" + x +"] == " + nn);
+            log("skip if v[" + x + "] == " + nn);
             if (v[x] == nn) {
                 pc = pc + 2;
             }
@@ -186,7 +188,7 @@ public class Emulator {
             int nn = (0x00FF & opcode);
             int rand = new Random().nextInt(256);
             v[x] = rand & nn;
-            log("v[" + x +"] = " + rand + " & "+nn);
+            log("v[" + x + "] = " + rand + " & " + nn);
             return;
         }
         if (firstCode == 0xD000) {
@@ -194,12 +196,12 @@ public class Emulator {
             int n = opcode & 0x000f;
             int x = v[(0x0F00 & opcode) >> 8];
             int y = v[(0x00F0 & opcode) >> 4];
-            log("display at " + x +"," + y + " " + n + " lines");
+            log("display at " + x + "," + y + " " + n + " lines");
             log("i = " + i);
             for (int row = 0; row < n; row++) {
                 int data = memory[i + row];
                 for (int col = 0; col < 8; col++) {
-                    boolean spriteSet = ((data >> 7-col) & 1) > 0;
+                    boolean spriteSet = ((data >> 7 - col) & 1) > 0;
                     int drawX = x + col;
                     int drawY = y + row;
                     if (spriteSet && drawX < 64 && drawY < 32) {
@@ -235,20 +237,31 @@ public class Emulator {
             return;
         }
         if (firstCode == 0xF000) {
-            //TODO:
             if (secondbyte == 0x07) {
                 int x = (0x0F00 & opcode) >> 8;
-                throw new RuntimeException(("07"));
+                v[x] = delayTimer;
 
             }
             if (secondbyte == 0x15) {
                 int x = (0x0F00 & opcode) >> 8;
-                throw new RuntimeException(("15"));
-
+                delayTimer = v[x];
+            }
+            if (secondbyte == 0x18) {
+                int x = (0x0F00 & opcode) >> 8;
+                soundTimer = v[x];
             }
             if (secondbyte == 0x1E) {
                 int x = (0x0F00 & opcode) >> 8;
                 i += v[x];
+            }
+            if (secondbyte == 0x33) {
+                int x = (0x0F00 & opcode) >> 8;
+                int value = v[x];
+                memory[i] = value / 100;
+                value = value % 100;
+                memory[i + 1] = value / 10;
+                value = value % 10;
+                memory[i + 2] = value;
             }
             return;
         }
@@ -261,14 +274,14 @@ public class Emulator {
 
     public void loadProgram(byte... data) {
         int base = 0x200;
-        for (int i = 0; i <data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             memory[base + i] = data[i];
         }
     }
 
     public void loadProgram(int... data) {
         int base = 0x200;
-        for (int i = 0; i <data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             memory[base + i] = data[i] & 0xFF;
         }
     }
