@@ -33,7 +33,9 @@ public class Gui {
 
     public void repaint() {
         if (jFrame != null) {
-            jFrame.repaint();
+            SwingUtilities.invokeLater(() -> {
+                jFrame.repaint();
+            });
         }
     }
 

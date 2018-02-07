@@ -40,7 +40,7 @@ public class Chip8 {
         int firstbyte = memory[pc++] & 0xFF;
         int secondbyte = memory[pc++] & 0xFF;
         int opcode = ((firstbyte << 8) | secondbyte) & 0xFFFF;
-        System.err.printf("opcode: %x\n", opcode);
+        log(String.format("opcode: %x\n", opcode));
         int firstCode = 0xF000 & opcode;
 
         //TODO: 0NNN
