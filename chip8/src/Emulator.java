@@ -16,20 +16,17 @@ public class Emulator {
     Stack<Integer> stack = new Stack<>();
     private boolean keyPressed;
     int soundTimer;
+    boolean waitingForKey;
+    private int keyTarget;
 
     public Emulator() {
         pc = 0x200;
-
-//        boolean toggle=false;
-//        for (int x = 0; x < 64; x++) {
-//            for (int y = 0; y < 32; y++) {
-//                videoMemory[x][y] = toggle;
-//                toggle = !toggle;
-//            }
-//        }
     }
 
     public void next() {
+        if (waitingForKey) {
+            return;
+        }
         int firstbyte = memory[pc++] & 0xFF;
         int secondbyte = memory[pc++] & 0xFF;
         int opcode = ((firstbyte << 8) | secondbyte) & 0xFFFF;
@@ -263,6 +260,23 @@ public class Emulator {
                 value = value % 10;
                 memory[i + 2] = value;
             }
+            if (secondbyte == 0x0A) {
+                waitingForKey = true;
+                int x = (0x0F00 & opcode) >> 8;
+                keyTarget = x;
+            }
+            if (secondbyte == 0x55) {
+                int x = (0x0F00 & opcode) >> 8;
+                for (int n = 0; n <= x; n++) {
+                    memory[i++] = v[n];
+                }
+            }
+            if (secondbyte == 0x65) {
+                int x = (0x0F00 & opcode) >> 8;
+                for (int n = 0; n <= x; n++) {
+                    v[n] = memory[i++];
+                }
+            }
             return;
         }
         throw new UnsupportedOperationException("Unsupported instruction: " + opcode);
@@ -292,6 +306,11 @@ public class Emulator {
 
     public void keyPressed() {
         this.keyPressed = true;
+        if (waitingForKey) {
+            this.waitingForKey = false;
+            //TODO: Hardcoded value
+            v[keyTarget] = 0xff;
+        }
     }
 
     public void keyReleased() {

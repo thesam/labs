@@ -1,6 +1,8 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.stream.IntStream;
+
 import static org.junit.Assert.*;
 
 public class EmulatorTest {
@@ -324,6 +326,60 @@ public class EmulatorTest {
         assertEquals(1,emulator.memory[emulator.i + 2]);
     }
 
+    @Test
+    public void _fx0a_block() {
+        execute(0xF00A);
+        int pc = emulator.pc;
+        emulator.next();
+        assertEquals(pc,emulator.pc);
+    }
+
+    @Test
+    public void _fx0a_block_stop() {
+        execute(0xF00A);
+        emulator.keyPressed();
+
+        assertEquals(0xff,emulator.v[0]);
+        emulator.memory[0x202] = 0xF1;
+        emulator.memory[0x203] = 0x1E;
+        int pc = emulator.pc;
+        emulator.next();
+        assertEquals(pc+2, emulator.pc);
+    }
+
+    @Test
+    public void _fx55() {
+        IntStream.rangeClosed(0,0xF).forEach(x ->
+            emulator.v[x] = x
+        );
+        emulator.i = 0;
+
+        execute(0xff55);
+
+        IntStream.rangeClosed(0,0xF).forEach(x ->
+                assertEquals(emulator.memory[x],x)
+        );
+
+        assertEquals(16,emulator.i);
+    }
+
+
+    @Test
+    public void _fx65() {
+        IntStream.rangeClosed(0,0xF).forEach(x ->
+                emulator.memory[x] = x
+        );
+        emulator.i = 0;
+
+        execute(0xff65);
+
+        IntStream.rangeClosed(0,0xF).forEach(x ->
+                assertEquals(emulator.v[x],x)
+        );
+
+        assertEquals(16,emulator.i);
+    }
+
 
     private void execute(int opcode) {
         int byte0 = (opcode & 0xFF00) >> 8;
@@ -380,11 +436,7 @@ CXNN	Rand	Vx=rand()&NN	Sets VX to the result of a bitwise and operation on a ran
 DXYN	Disp	draw(Vx,Vy,N)	Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
 EX9E	KeyOp	if(key()==Vx)	Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
 EXA1	KeyOp	if(key()!=Vx)	Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
-FX0A	KeyOp	Vx = get_key()	A key press is awaited, and then stored in VX. (Blocking Operation. All instruction halted until next key event)
 FX29	MEM	I=sprite_addr[Vx]	Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
-FX55	MEM	reg_dump(Vx,&I)	Stores V0 to VX (including VX) in memory starting at address I. I is increased by 1 for each value written.
-FX65	MEM	reg_load(Vx,&I)	Fills V0 to VX (including VX) with values from memory starting at address I. I is increased by 1 for each value written.
-
      */
 
 }
