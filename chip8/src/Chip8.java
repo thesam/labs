@@ -316,7 +316,7 @@ public class Chip8 {
     }
 
     private void log(String str) {
-        System.err.println(str);
+        //System.err.println(str);
     }
 
     public void keyPressed() {

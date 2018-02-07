@@ -32,9 +32,9 @@ public class Gui {
     }
 
     public void repaint() {
-        if (jFrame != null) {
+        if (jPanel != null) {
             SwingUtilities.invokeLater(() -> {
-                jFrame.repaint();
+                jPanel.repaint();
             });
         }
     }
@@ -47,21 +47,19 @@ public class Gui {
     class ScreenPanel extends JPanel {
         @Override
         public void paint(Graphics graphics) {
-            super.paint(graphics);
+            Graphics2D graphics2d = (Graphics2D) graphics;
+            Graphics imageGraphics = bufferedImage.getGraphics();
             for (int x = 0; x < 64; x++) {
                 for (int y = 0; y < 32; y++) {
-                    Graphics2D graphics2d = (Graphics2D) graphics;
-                    Graphics imageGraphics = bufferedImage.getGraphics();
-                    //graphics2d.scale(2,2);
                     if (videoMemory[x][y]) {
                         imageGraphics.setColor(Color.BLACK);
                     } else {
                         imageGraphics.setColor(Color.WHITE);
                     }
                     imageGraphics.drawLine(x, y, x, y);
-                    graphics2d.drawImage(bufferedImage, 0, 0, 640, 320, null);
                 }
             }
+            graphics2d.drawImage(bufferedImage, 0, 0, 640, 320, null);
         }
     }
 
