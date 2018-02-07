@@ -3,6 +3,8 @@ import java.util.Stack;
 
 public class Chip8 {
 
+    private final Timer clock;
+    private final Timer delay;
     int[] memory = new int[4096];
     int[] v = new int[16];
     int i;
@@ -19,8 +21,16 @@ public class Chip8 {
     boolean waitingForKey;
     private int keyTarget;
 
-    public Chip8() {
+    public Chip8(Timer clock, Timer delay) {
+        this.clock = clock;
+        this.delay = delay;
         pc = 0x200;
+        delay.onTick(() -> {
+            this.delayTimer--;
+            if (delayTimer < 0) {
+                delayTimer = 0;
+            }
+        });
     }
 
     public void next() {
@@ -316,5 +326,10 @@ public class Chip8 {
     public void keyReleased() {
         log("keyReleased");
         this.keyPressed = false;
+    }
+
+    public void boot() {
+        delay.start();
+        clock.start();
     }
 }

@@ -8,10 +8,14 @@ import static org.junit.Assert.*;
 public class Chip8Test {
 
     private Chip8 chip8;
+    private Timer clock;
+    private Timer delay;
 
     @Before
     public void setup() {
-        chip8 = new Chip8();
+        clock = new Timer(1000);
+        delay = new Timer(60);
+        chip8 = new Chip8(clock, delay);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -444,6 +448,14 @@ public class Chip8Test {
         chip8.loadProgram((byte) 0xD0,(byte) 0x01);
         chip8.next();
         assertEquals(1, chip8.v[0xf]);
+    }
+
+    @Test
+    public void delayTimerShouldDecrease() throws InterruptedException {
+        chip8.delayTimer = 60;
+        chip8.boot();
+        Thread.sleep(1000);
+        assertEquals(0,chip8.delayTimer);
     }
 
 

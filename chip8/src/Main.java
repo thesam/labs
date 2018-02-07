@@ -10,28 +10,18 @@ public class Main {
         File file = selectFile();
 
         byte[] bytes = Files.readAllBytes(file.toPath());
-        Chip8 chip8 = new Chip8();
+        Timer cpuTimer = new Timer(1000);
+        Chip8 chip8 = new Chip8(cpuTimer, new Timer(60));
         chip8.loadProgram(bytes);
 
         Gui gui = showGui(chip8);
 
-        Timer delayTimer = new Timer(16700);
-        delayTimer.onTick(() -> {
-            chip8.delayTimer--;
-            if (chip8.delayTimer < 0) {
-                chip8.delayTimer = 0;
-            }
-            //System.err.println("TICK");
-        });
-        delayTimer.start();
-
-        Timer cpuTimer = new Timer(1000);
         cpuTimer.onTick(() -> {
             chip8.next();
             gui.repaint();
         });
 
-        cpuTimer.start();
+        chip8.boot();
     }
 
     private static Gui showGui(Chip8 chip8) {

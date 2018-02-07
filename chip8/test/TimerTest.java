@@ -9,13 +9,12 @@ public class TimerTest {
     @Test
     public void shouldCallCallback() throws InterruptedException {
         AtomicInteger count = new AtomicInteger(0);
-        Timer timer = new Timer(16700);
+        Timer timer = new Timer(60);
         timer.onTick(() -> {
             count.incrementAndGet();
         });
         timer.start();
         Thread.sleep(1000);
-        timer.stop();
         assertTrue(count.get() >= 59);
         assertTrue(count.get() <= 62);
         System.err.println(count.get());

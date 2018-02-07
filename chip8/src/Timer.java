@@ -9,20 +9,18 @@ public class Timer {
     private ScheduledExecutorService scheduledExecutorService;
     private ScheduledFuture<?> scheduledFuture;
 
-    public Timer(int delayUs) {
-        this.delayUs = delayUs;
+    public Timer(int hz) {
+        this.delayUs = (int) ((1.0 / hz) * 1_000_000);
+        scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     public void onTick(Runnable onTickCb) {
         this.onTickCb = onTickCb;
-        scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     public void start() {
-        scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(onTickCb, 0, delayUs, TimeUnit.MICROSECONDS);
-    }
-
-    public void stop() {
-        //scheduledFuture.cancel()
+        if (onTickCb != null) {
+            scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(onTickCb, 0, delayUs, TimeUnit.MICROSECONDS);
+        }
     }
 }
