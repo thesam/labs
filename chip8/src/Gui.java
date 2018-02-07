@@ -1,19 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 public class Gui {
 
+    private final Runnable onKeyPress;
+    private final Runnable onKeyRelease;
     private JFrame jFrame;
     private JPanel jPanel;
     private boolean[][] videoMemory;
-    private KeyListener keyListener;
     private BufferedImage bufferedImage = new BufferedImage(64, 32, BufferedImage.TYPE_3BYTE_BGR);
 
-    public Gui(KeyListener keyListener) {
+    public Gui(Runnable onKeyPress, Runnable onKeyRelease) {
         this.videoMemory = new boolean[64][32];
-        this.keyListener = keyListener;
+        this.onKeyPress = onKeyPress;
+        this.onKeyRelease = onKeyRelease;
     }
 
     public void show() {
@@ -26,7 +30,22 @@ public class Gui {
             jFrame.pack();
             jFrame.setResizable(false);
             jFrame.setLocationRelativeTo(null);
-            jFrame.addKeyListener(this.keyListener);
+            jFrame.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent keyEvent) {
+
+                }
+
+                @Override
+                public void keyPressed(KeyEvent keyEvent) {
+                    onKeyPress.run();
+                }
+
+                @Override
+                public void keyReleased(KeyEvent keyEvent) {
+                    onKeyRelease.run();
+                }
+            });
             jFrame.setVisible(true);
         });
     }

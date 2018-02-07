@@ -1,49 +1,24 @@
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.*;
 import java.nio.file.Files;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        File file = selectFile();
+        Chip8 chip8 = new Chip8(new Timer(1000), new Timer(60));
 
+        File file = selectFile();
         byte[] bytes = Files.readAllBytes(file.toPath());
-        Timer cpuTimer = new Timer(1000);
-        Chip8 chip8 = new Chip8(cpuTimer, new Timer(60));
         chip8.loadProgram(bytes);
 
-        Gui gui = showGui(chip8);
-        chip8.onDraw((videoMemory) -> {
-           gui.draw(videoMemory);
-        });
-
-        cpuTimer.onTick(() -> {
-            chip8.next();
-        });
+        Gui gui = initGui(chip8);
+        chip8.onDraw(gui::draw);
 
         chip8.boot();
     }
 
-    private static Gui showGui(Chip8 chip8) {
-        Gui gui = new Gui(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent keyEvent) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-                chip8.keyPressed();
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                chip8.keyReleased();
-            }
-        });
+    private static Gui initGui(Chip8 chip8) {
+        Gui gui = new Gui(() -> chip8.keyPressed(),()->chip8.keyReleased());
         gui.show();
         return gui;
     }
@@ -53,5 +28,4 @@ public class Main {
         jFileChooser.showDialog(null, null);
         return jFileChooser.getSelectedFile();
     }
-    //System.err.println("STOP");
 }

@@ -28,6 +28,7 @@ public class Chip8 {
         this.clock = clock;
         this.delay = delay;
         pc = 0x200;
+        clock.onTick(this::next);
         delay.onTick(() -> {
             this.delayTimer--;
             if (delayTimer < 0) {
