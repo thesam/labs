@@ -427,6 +427,25 @@ public class EmulatorTest {
         assertEquals(false,emulator.videoMemory[7][0]);
     }
 
+    @Test
+    public void drawWithoutCollision() {
+        emulator.i = 0;
+        emulator.memory[0] = 0xFF;
+        emulator.loadProgram((byte) 0xD0,(byte) 0x01);
+        emulator.next();
+        assertEquals(0,emulator.v[0xf]);
+    }
+
+    @Test
+    public void drawWithCollision() {
+        emulator.i = 0;
+        emulator.memory[0] = 0xFF;
+        emulator.videoMemory[0][0] = true;
+        emulator.loadProgram((byte) 0xD0,(byte) 0x01);
+        emulator.next();
+        assertEquals(1,emulator.v[0xf]);
+    }
+
 
 /*
 From: https://en.wikipedia.org/wiki/CHIP-8

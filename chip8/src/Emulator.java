@@ -195,6 +195,7 @@ public class Emulator {
             int y = v[(0x00F0 & opcode) >> 4];
             log("display at " + x + "," + y + " " + n + " lines");
             log("i = " + i);
+            v[0xf] = 0;
             for (int row = 0; row < n; row++) {
                 int data = memory[i + row];
                 for (int col = 0; col < 8; col++) {
@@ -205,7 +206,7 @@ public class Emulator {
                         log("DRAW to " + drawX + "," + drawY);
                         boolean currentPixel = videoMemory[drawX][drawY];
                         videoMemory[drawX][drawY] = spriteSet ^ currentPixel;
-                        if (videoMemory[drawX][drawY] != currentPixel) {
+                        if (videoMemory[drawX][drawY] == false && currentPixel == true) {
                             flipped = true;
                         }
                     }
@@ -213,8 +214,6 @@ public class Emulator {
             }
             if (flipped) {
                 v[0xf] = 1;
-            } else {
-                v[0xf] = 0;
             }
             return;
         }
