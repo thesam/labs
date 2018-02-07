@@ -36,7 +36,7 @@ public class Main {
         monitor.show();
         emulator.loadProgram(bytes);
         int count = 0;
-        Timer delayTimer = new Timer();
+        Timer delayTimer = new Timer(16700);
         delayTimer.onTick(() -> {
             emulator.delayTimer--;
             if (emulator.delayTimer < 0) {
@@ -45,12 +45,14 @@ public class Main {
             //System.err.println("TICK");
         });
         delayTimer.start();
-        while (true) {
-            //System.err.print(count + ": ");
+
+        Timer cpuTimer = new Timer(1000);
+        cpuTimer.onTick(() -> {
             emulator.next();
             monitor.repaint();
-            count++;
-        }
-        //System.err.println("STOP");
+        });
+
+        cpuTimer.start();
     }
+    //System.err.println("STOP");
 }

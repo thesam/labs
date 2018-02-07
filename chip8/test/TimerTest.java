@@ -9,7 +9,7 @@ public class TimerTest {
     @Test
     public void shouldCallCallback() throws InterruptedException {
         AtomicInteger count = new AtomicInteger(0);
-        Timer timer = new Timer();
+        Timer timer = new Timer(16700);
         timer.onTick(() -> {
             count.incrementAndGet();
         });
