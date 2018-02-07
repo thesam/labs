@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
-public class Monitor {
+public class Gui {
 
     private JFrame jFrame;
     private JPanel jPanel;
@@ -11,7 +11,7 @@ public class Monitor {
     private KeyListener keyListener;
     private BufferedImage bufferedImage = new BufferedImage(64, 32, BufferedImage.TYPE_3BYTE_BGR);
 
-    public Monitor(boolean[][] videoMemory, KeyListener keyListener) {
+    public Gui(boolean[][] videoMemory, KeyListener keyListener) {
         this.videoMemory = videoMemory;
         this.keyListener = keyListener;
     }

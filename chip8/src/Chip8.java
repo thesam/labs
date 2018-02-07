@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Stack;
 
-public class Emulator {
+public class Chip8 {
 
     int[] memory = new int[4096];
     int[] v = new int[16];
@@ -19,7 +19,7 @@ public class Emulator {
     boolean waitingForKey;
     private int keyTarget;
 
-    public Emulator() {
+    public Chip8() {
         pc = 0x200;
     }
 
