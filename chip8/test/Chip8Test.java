@@ -413,6 +413,16 @@ public class Chip8Test {
         assertEquals(true, chip8.videoMemory[5][0]);
         assertEquals(true, chip8.videoMemory[6][0]);
         assertEquals(true, chip8.videoMemory[7][0]);
+        for (int i = 8; i < 64; i++) {
+            assertEquals(false,chip8.videoMemory[i][0]);
+        }
+        IntStream.range(1,32).forEach(col -> {
+            assertEmptyColumn(col);
+        });
+    }
+
+    private void assertEmptyColumn(int col) {
+        IntStream.range(0,64).forEach(row -> assertEquals(false,chip8.videoMemory[row][col]));
     }
 
     @Test

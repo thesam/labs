@@ -1,5 +1,7 @@
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 public class Chip8 {
 
@@ -20,6 +22,7 @@ public class Chip8 {
     int soundTimer;
     boolean waitingForKey;
     private int keyTarget;
+    private Consumer<boolean[][]> drawConsumer;
 
     public Chip8(Timer clock, Timer delay) {
         this.clock = clock;
@@ -225,6 +228,9 @@ public class Chip8 {
             if (flipped) {
                 v[0xf] = 1;
             }
+            if (drawConsumer != null) {
+                drawConsumer.accept(Arrays.copyOf(this.videoMemory,this.videoMemory.length));
+            }
             return;
         }
         if (firstCode == 0xE000) {
@@ -331,5 +337,9 @@ public class Chip8 {
     public void boot() {
         delay.start();
         clock.start();
+    }
+
+    public void onDraw(Consumer<boolean[][]> consumer) {
+        this.drawConsumer = consumer;
     }
 }

@@ -15,17 +15,19 @@ public class Main {
         chip8.loadProgram(bytes);
 
         Gui gui = showGui(chip8);
+        chip8.onDraw((videoMemory) -> {
+           gui.draw(videoMemory);
+        });
 
         cpuTimer.onTick(() -> {
             chip8.next();
-            gui.repaint();
         });
 
         chip8.boot();
     }
 
     private static Gui showGui(Chip8 chip8) {
-        Gui gui = new Gui(chip8.videoMemory, new KeyListener() {
+        Gui gui = new Gui(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent keyEvent) {
 

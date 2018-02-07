@@ -11,8 +11,8 @@ public class Gui {
     private KeyListener keyListener;
     private BufferedImage bufferedImage = new BufferedImage(64, 32, BufferedImage.TYPE_3BYTE_BGR);
 
-    public Gui(boolean[][] videoMemory, KeyListener keyListener) {
-        this.videoMemory = videoMemory;
+    public Gui(KeyListener keyListener) {
+        this.videoMemory = new boolean[64][32];
         this.keyListener = keyListener;
     }
 
@@ -37,6 +37,11 @@ public class Gui {
                 jFrame.repaint();
             });
         }
+    }
+
+    public void draw(boolean[][] videoMemory) {
+        this.videoMemory = videoMemory;
+        repaint();
     }
 
     class ScreenPanel extends JPanel {
