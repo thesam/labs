@@ -5,28 +5,36 @@ import java.awt.image.BufferedImage;
 
 public class Monitor {
 
-    private final JFrame jFrame;
-    private final JPanel jPanel;
+    private JFrame jFrame;
+    private JPanel jPanel;
     private boolean[][] videoMemory;
-    private BufferedImage bufferedImage = new BufferedImage(64,32,BufferedImage.TYPE_3BYTE_BGR);
+    private KeyListener keyListener;
+    private BufferedImage bufferedImage = new BufferedImage(64, 32, BufferedImage.TYPE_3BYTE_BGR);
 
     public Monitor(boolean[][] videoMemory, KeyListener keyListener) {
         this.videoMemory = videoMemory;
-
-        jFrame = new JFrame();
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Insets insets = jFrame.getInsets();
-        jPanel = new ScreenPanel();
-        jFrame.getContentPane().add(jPanel);
-        jPanel.setPreferredSize(new Dimension(640,320));
-        jFrame.pack();
-        jFrame.setResizable(false);
-        jFrame.setLocationRelativeTo(null);
-        jPanel.addKeyListener(keyListener);
+        this.keyListener = keyListener;
     }
 
     public void show() {
-        jFrame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            jFrame = new JFrame();
+            jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            jPanel = new ScreenPanel();
+            jFrame.getContentPane().add(jPanel);
+            jPanel.setPreferredSize(new Dimension(640, 320));
+            jFrame.pack();
+            jFrame.setResizable(false);
+            jFrame.setLocationRelativeTo(null);
+            jFrame.addKeyListener(this.keyListener);
+            jFrame.setVisible(true);
+        });
+    }
+
+    public void repaint() {
+        if (jFrame != null) {
+            jFrame.repaint();
+        }
     }
 
     class ScreenPanel extends JPanel {
@@ -43,8 +51,8 @@ public class Monitor {
                     } else {
                         imageGraphics.setColor(Color.WHITE);
                     }
-                    imageGraphics.drawLine(x,y,x,y);
-                    graphics2d.drawImage(bufferedImage,0,0,640,320,null);
+                    imageGraphics.drawLine(x, y, x, y);
+                    graphics2d.drawImage(bufferedImage, 0, 0, 640, 320, null);
                 }
             }
         }

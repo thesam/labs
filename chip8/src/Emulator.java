@@ -305,6 +305,7 @@ public class Emulator {
     }
 
     public void keyPressed() {
+        log("keyPressed");
         this.keyPressed = true;
         if (waitingForKey) {
             this.waitingForKey = false;
@@ -314,6 +315,7 @@ public class Emulator {
     }
 
     public void keyReleased() {
+        log("keyReleased");
         this.keyPressed = false;
     }
 }
