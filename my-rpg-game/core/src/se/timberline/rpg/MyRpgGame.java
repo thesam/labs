@@ -3,6 +3,7 @@ package se.timberline.rpg;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,6 +15,7 @@ public class MyRpgGame extends ApplicationAdapter {
 	private TextureRegion characterSprite;
     private Texture overworldSheet;
     private TextureRegion greenGrass;
+    private OrthographicCamera cam;
 
     @Override
 	public void create () {
@@ -23,12 +25,15 @@ public class MyRpgGame extends ApplicationAdapter {
         characterSprite = new TextureRegion(characterSheet, 1, 6, 15, 22);
         overworldSheet = new Texture("gfx/Overworld.png");
         greenGrass = new TextureRegion(overworldSheet, 16, 16);
+        cam = new OrthographicCamera(320, 240);
     }
 
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		cam.update();
+		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		//batch.draw(img, 0, 0);
         batch.draw(greenGrass,0,0);
