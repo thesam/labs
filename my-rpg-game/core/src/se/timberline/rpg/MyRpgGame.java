@@ -12,14 +12,18 @@ public class MyRpgGame extends ApplicationAdapter {
 	Texture img;
 	private Texture characterSheet;
 	private TextureRegion characterSprite;
+    private Texture overworldSheet;
+    private TextureRegion greenGrass;
 
-	@Override
+    @Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
 		characterSheet = new Texture("gfx/character.png");
-		characterSprite = new TextureRegion(characterSheet, 1, 6, 15, 22);
-	}
+        characterSprite = new TextureRegion(characterSheet, 1, 6, 15, 22);
+        overworldSheet = new Texture("gfx/Overworld.png");
+        greenGrass = new TextureRegion(overworldSheet, 16, 16);
+    }
 
 	@Override
 	public void render () {
@@ -27,7 +31,8 @@ public class MyRpgGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		//batch.draw(img, 0, 0);
-		batch.draw(characterSprite,0,0,150,220);
+        batch.draw(greenGrass,0,0);
+		batch.draw(characterSprite,0,0,15,22);
 		batch.end();
 	}
 	
