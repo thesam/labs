@@ -1,7 +1,11 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * From http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#dispcoords
  */
-public enum FontSprites {
+public class FontSprites {
     _0(0xF0, 0x90, 0x90, 0x90, 0xF0),
     _1(0x20, 0x60, 0x20, 0x20, 0x70),
     _2(0xF0, 0x10, 0xF0, 0x80, 0xF0),
@@ -25,3 +29,45 @@ public enum FontSprites {
         this.data = data;
     }
 }
+
+static class Animal { public void identify() {} }
+
+static class Cat extends Animal {}
+
+    public static <U, T extends U> void add1( T obj, Collection<U> c) {
+
+        c.add(obj);
+
+    }
+
+    public static <T> void add2( T obj, Collection<? super T> c) {
+
+        c.add(obj);
+
+    }
+
+    public static <T> void add3( T obj, Collection<? extends T> c) {
+
+        c.add(obj);
+
+    }
+
+    public static <T> void add4( T obj, Collection<? super Cat> c) {
+
+        c.add(obj);
+
+    }
+
+    public static void main( String[] args) {
+
+        List<Animal> box = new ArrayList<Animal>();
+
+        add1(new Cat(), box);
+
+        add2(new Cat(), box);
+
+        add3(new Cat(), box);
+
+        add4(new Cat(), box);
+
+    }

@@ -13,7 +13,13 @@ nightmare
   .type('#Passwd', PW)
   .wait('#signIn')
   .click('#signIn')
-  // .wait('#r1-0 a.result__a')
+//TODO: CLICK FOR SENDING SMS
+  .wait('')
+  .click('')  
+//TODO: ACCEPT TWO FACTOR INPUT FROM CONSOLE
+//TODO: ENTER TWO FACTOR
+
+// .wait('#r1-0 a.result__a')
   // .evaluate(() => document.querySelector('#r1-0 a.result__a').href)
   //.end()
   .then(console.log)
