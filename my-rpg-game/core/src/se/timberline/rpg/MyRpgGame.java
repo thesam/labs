@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -21,6 +22,9 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
     private float x = 0;
     private float y = 0;
 	private Integer keycode;
+	private Animation<TextureRegion> walkAnimation;
+	private float stateTime;
+	private TextureRegion characterSprite2;
 
 	@Override
 	public void create () {
@@ -28,16 +32,25 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 		img = new Texture("badlogic.jpg");
 		characterSheet = new Texture("gfx/character.png");
         characterSprite = new TextureRegion(characterSheet, 1, 6, 15, 22);
+		characterSprite2 = new TextureRegion(characterSheet, 17, 7, 15, 22);
         overworldSheet = new Texture("gfx/Overworld.png");
         greenGrass = new TextureRegion(overworldSheet, 16, 16);
         cam = new OrthographicCamera(320, 240);
 
         Gdx.input.setInputProcessor(this);
+
+		TextureRegion[] walkFrames = new TextureRegion[2];
+		walkFrames[0] = characterSprite;
+		walkFrames[1] = characterSprite2;
+		walkAnimation = new Animation<TextureRegion>(1f, walkFrames);
+		stateTime = 0f;
     }
 
 	@Override
 	public void render () {
 		update();
+		stateTime += Gdx.graphics.getDeltaTime();
+		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.update();
@@ -45,7 +58,7 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 		batch.begin();
 		//batch.draw(img, 0, 0);
         batch.draw(greenGrass,0,0);
-		batch.draw(characterSprite,x,y,15,22);
+		batch.draw(currentFrame,x,y,15,22);
 		batch.end();
 	}
 
