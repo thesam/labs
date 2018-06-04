@@ -25,6 +25,7 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 	private Animation<TextureRegion> walkAnimation;
 	private float stateTime;
 	private TextureRegion characterSprite2;
+	private TextureRegion currentFrame;
 
 	@Override
 	public void create () {
@@ -43,6 +44,7 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 		walkFrames[0] = characterSprite;
 		walkFrames[1] = characterSprite2;
 		walkAnimation = new Animation<TextureRegion>(1f, walkFrames);
+		currentFrame = walkFrames[0];
 		stateTime = 0f;
     }
 
@@ -50,7 +52,9 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 	public void render () {
 		update();
 		stateTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
+		if (keycode != null) {
+			currentFrame = walkAnimation.getKeyFrame(stateTime, true);
+		}
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.update();
