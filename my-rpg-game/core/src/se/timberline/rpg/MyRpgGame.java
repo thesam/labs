@@ -14,38 +14,26 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 	SpriteBatch batch;
 	Texture img;
-	private Texture characterSheet;
-	private TextureRegion characterSprite;
     private Texture overworldSheet;
     private TextureRegion greenGrass;
     private OrthographicCamera cam;
     private float x = 0;
     private float y = 0;
 	private Integer keycode;
-	private Animation<TextureRegion> walkAnimation;
 	private float stateTime;
-	private TextureRegion characterSprite2;
-	private TextureRegion currentFrame;
+	private Player player;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		characterSheet = new Texture("gfx/character.png");
-        characterSprite = new TextureRegion(characterSheet, 1, 6, 15, 22);
-		characterSprite2 = new TextureRegion(characterSheet, 17, 7, 15, 22);
-        overworldSheet = new Texture("gfx/Overworld.png");
+	    overworldSheet = new Texture("gfx/Overworld.png");
         greenGrass = new TextureRegion(overworldSheet, 16, 16);
         cam = new OrthographicCamera(320, 240);
 
         Gdx.input.setInputProcessor(this);
 
-		TextureRegion[] walkFrames = new TextureRegion[2];
-		walkFrames[0] = characterSprite;
-		walkFrames[1] = characterSprite2;
-		walkAnimation = new Animation<TextureRegion>(1f, walkFrames);
-		currentFrame = walkFrames[0];
 		stateTime = 0f;
+		player = new Player();
     }
 
 	@Override
@@ -53,8 +41,8 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 		update();
 		stateTime += Gdx.graphics.getDeltaTime();
 		if (keycode != null) {
-			currentFrame = walkAnimation.getKeyFrame(stateTime, true);
-		}
+			player.animate(stateTime);
+			}
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.update();
@@ -62,7 +50,7 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 		batch.begin();
 		//batch.draw(img, 0, 0);
         batch.draw(greenGrass,0,0);
-		batch.draw(currentFrame,x,y,15,22);
+		batch.draw(player.currentFrame(),player.x(),player.y(),15,22);
 		batch.end();
 	}
 
@@ -71,19 +59,19 @@ public class MyRpgGame extends ApplicationAdapter implements InputProcessor {
 			switch (keycode) {
 				case Input.Keys
 						.DOWN:
-					y--;
+					player.move(0,-1);
 					break;
 				case Input.Keys
 						.UP:
-					y++;
+					player.move(0,1);
 					break;
 				case Input.Keys
 						.LEFT:
-					x--;
+					player.move(-1,0);
 					break;
 				case Input.Keys
 						.RIGHT:
-					x++;
+					player.move(1,0);
 					break;
 			}
 		}
