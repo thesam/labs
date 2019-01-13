@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import org.apache.commons.math3.random.MersenneTwister;
 
 import java.util.Random;
 
@@ -23,23 +24,22 @@ public class MyGalaxyGame extends ApplicationAdapter {
         pixmap = new Pixmap(600, 400, Pixmap.Format.RGB888);
         for (int x = 0; x < 600; x++) {
             for (int y = 0; y < 400; y++) {
-                pixmap.setColor(getColor(x,y));
+                pixmap.setColor(getColor(x, y));
                 pixmap.drawPixel(x, y);
             }
         }
     }
 
     private Color getColor(int x, int y) {
-        int seed = ((x << 32) | y) ^ 12345679;
-        Random random = new Random(seed);
+        MersenneTwister random = new MersenneTwister(new int[]{x, y});
         int rand = random.nextInt();
-        return rand % 2 == 0 ? Color.RED : Color.BLACK;
+        return rand > (Integer.MAX_VALUE - 10000000) ? Color.RED : Color.BLACK;
     }
 
     @Override
     public void render() {
         img = new Texture(pixmap);
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.draw(img, 0, 0);
