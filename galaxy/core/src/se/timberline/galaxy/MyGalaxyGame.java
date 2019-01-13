@@ -33,7 +33,10 @@ public class MyGalaxyGame extends ApplicationAdapter {
     private Color getColor(int x, int y) {
         MersenneTwister random = new MersenneTwister(new int[]{x, y});
         int rand = random.nextInt();
-        return rand > (Integer.MAX_VALUE - 10000000) ? Color.RED : Color.BLACK;
+        int r = random.nextInt();
+        int g = random.nextInt();
+        int b = random.nextInt();
+        return rand > (Integer.MAX_VALUE - 10000000) ? new Color(r, g, b, 1) : Color.BLACK;
     }
 
     @Override
