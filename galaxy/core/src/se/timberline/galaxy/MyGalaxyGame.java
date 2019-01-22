@@ -2,6 +2,8 @@ package se.timberline.galaxy;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -12,19 +14,25 @@ import org.apache.commons.math3.random.MersenneTwister;
 
 import java.util.Random;
 
-public class MyGalaxyGame extends ApplicationAdapter {
+public class MyGalaxyGame extends ApplicationAdapter implements InputProcessor {
     SpriteBatch batch;
     Texture img;
-    private ShapeRenderer shapeRenderer;
     private Pixmap pixmap;
+    private int xoffset;
+    private int yoffset;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         pixmap = new Pixmap(600, 400, Pixmap.Format.RGB888);
+        reRender();
+        Gdx.input.setInputProcessor(this);
+    }
+
+    private void reRender() {
         for (int x = 0; x < 600; x++) {
             for (int y = 0; y < 400; y++) {
-                pixmap.setColor(getColor(x, y));
+                pixmap.setColor(getColor(x + xoffset, y + yoffset));
                 pixmap.drawPixel(x, y);
             }
         }
@@ -53,5 +61,61 @@ public class MyGalaxyGame extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         img.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.W) {
+            yoffset -= 10;
+            reRender();
+        }
+        if (keycode == Input.Keys.S) {
+            yoffset += 10;
+            reRender();
+        }
+        if (keycode == Input.Keys.A) {
+            xoffset -= 10;
+            reRender();
+        }
+        if (keycode == Input.Keys.D) {
+            xoffset += 10;
+            reRender();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
