@@ -7,6 +7,7 @@ dest = sys.argv[2]
 
 def get_latest_snapshot(dataset):
 	result = subprocess.run(['zfs','list','-H','-o','name','-r','-t','snapshot',dataset], stdout=subprocess.PIPE)
+	result.check_returncode()
 	snapshots = result.stdout.split(b'\n')
 	latest_snapshot = snapshots[-2]
 	return latest_snapshot.decode("utf-8")
@@ -20,4 +21,5 @@ print("To: " + to_snap)
 
 shellcmd = 'zfs send -I ' + from_snap + ' ' + to_snap + ' | zfs recv ' + dest
 print('Running: ' + shellcmd)
-subprocess.run(shellcmd, shell=True)
+result = subprocess.run(shellcmd, shell=True)
+result.check_returncode()
